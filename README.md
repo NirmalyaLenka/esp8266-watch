@@ -257,6 +257,32 @@ MIT License — free to use, modify, and share!
 
 ---
 
+## Skills & technologies
+
+[![C++](https://img.shields.io/badge/C%2B%2B-cpp?logo=C%2B%2B&logoColor=white)](https://github.com/NirmalyaLenka/esp8266-watch) · [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://github.com/NirmalyaLenka/esp8266-watch)
+
+
+## Repository structure
+
+Key files and folders (not an exhaustive listing):
+
+- `QUICKSTART.md`
+- `README.md`
+- `emo_clock.ino`
+- `esp8266watch.ino`
+- `index.svg`
+- `notifier.py`
+- `notifier_pc.py`
+- `oled_watch.ino`
+- `timezone_values.md`
+- `watchfuneddition.ino`
+
+
+## How it works
+
+The firmware entry point is `emo_clock.ino`. Open the sketch in Arduino IDE, select the matching board and serial port, verify the pin mapping and required libraries, then compile and upload. Hardware behaviour must be validated on the actual board; a README alone does not prove the circuit is safe or working.
+
+
 ## Maintenance & Audit
 
 - **Audit date:** 10 November 2026
