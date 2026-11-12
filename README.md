@@ -1,9 +1,8 @@
 # 🤖 EMO Clock — ESP8266 + OLED Smart Watch
 
-A smart watch built with ESP8266 and a 0.96" OLED display.  
-Shows time, date, weather, and WhatsApp + call notifications — all on a tiny screen!
+A smart-watch-style clock prototype for an ESP8266 and a 128×64 SSD1306 I²C OLED. The primary sketch combines time/date, network weather, and notification display. This repository also contains three alternative watch sketches and two host-side notification scripts.
 
-![EMO Clock](images/preview.png)
+The repository contains `index.svg`, but no `images/preview.png`; the file guide below reflects the actual root-level layout.
 
 ---
 
@@ -31,7 +30,7 @@ Shows time, date, weather, and WhatsApp + call notifications — all on a tiny s
 | Li-ion 3.7V battery (optional) | Local electronics shop |
 | TP4056 charging module (optional) | AliExpress |
 
-**Total cost: ~₹200–400**
+Costs vary by board and display; current prices have not been checked.
 
 ---
 
@@ -46,7 +45,7 @@ SDA       →  D2 (GPIO4)
 SCL       →  D1 (GPIO5)
 ```
 
-> ⚠️ Use **3.3V** not 5V — 5V will damage the OLED!
+> **Electrical note:** This wiring assumes a 3.3 V supply and compatible I²C logic. Check the datasheet/markings for your exact OLED module before powering it.
 
 ---
 
@@ -86,16 +85,16 @@ Go to **Sketch → Include Library → Manage Libraries** and install:
 4. Copy your API key
 
 ### Step 5 — Configure the Code
-1. Open `arduino/emo_clock/emo_clock.ino` in Arduino IDE
-2. Find the settings section near the top:
+1. Open the root-level `emo_clock.ino` in Arduino IDE. The other `.ino` files are alternative sketches, not files inside an `arduino/` folder.
+2. In the settings section near the top, replace the Wi-Fi and weather values with your own configuration:
    ```cpp
-   const char* ssid          = "Ggg";              // ← Your WiFi name
-   const char* password      = "00000000";          // ← Your WiFi password
-   const char* weatherApiKey = "YOUR_API_KEY_HERE"; // ← Paste API key here
-   const char* weatherCity   = "Agartala";          // ← Your city
-   const int   utcOffsetSec  = 19800;               // ← IST timezone
+   const char* ssid          = "YOUR_WIFI_NAME";
+   const char* password      = "YOUR_WIFI_PASSWORD";
+   const char* weatherApiKey = "YOUR_API_KEY_HERE";
+   const char* weatherCity   = "YOUR_CITY";
+   const int   utcOffsetSec  = 19800; // IST; adjust for your timezone
    ```
-3. Change these values to match your setup
+3. Save the sketch before compiling. Do not commit real Wi-Fi passwords or API keys. Some sketches in this repository contain hard-coded network settings; replace those before use, and rotate any credentials that were real and have already been published.
 
 **Timezone offsets:**
 | Zone | Value |
@@ -147,7 +146,7 @@ mkdir emo-clock
 cd emo-clock
 ```
 
-Now copy `python/notifier.py` to your phone (use any file manager or type it):
+Copy the root-level `notifier.py` to your phone (use a file manager, USB, or another transfer method):
 ```bash
 nano notifier.py
 ```
@@ -179,32 +178,17 @@ python notifier.py
 ## 🪟 Windows PC Setup — For Notifications
 
 ```bash
-pip install requests pywin32
-python python/notifier_pc.py
+python -m pip install requests pywin32
+python notifier_pc.py
 ```
 
-- Open **WhatsApp Desktop** or **WhatsApp Web** in browser
-- New messages automatically appear on the clock
+- Keep WhatsApp Desktop or WhatsApp Web open. The script reads window titles and sends a detected sender plus a message-count summary; it does **not** forward the full message body.
 
 ---
 
-## 🔋 Battery (Optional)
+## 🔋 Battery power
 
-To run without USB:
-
-```
-[Li-ion 3.7V] → [TP4056 module] → [NodeMCU VIN pin]
-```
-
-| Component | Purpose |
-|-----------|---------|
-| Li-ion 18650 | Power source |
-| TP4056 | Safe charging via USB |
-| NodeMCU VIN | Has built-in 3.3V regulator |
-
-**Battery life estimate:**
-- Normal: ~25 hours (2000mAh battery)
-- Deep sleep mode: months
+Battery operation is not validated by the files in this repository. Do not assume a bare 3.7 V cell, charger board, and NodeMCU VIN connection form a safe or correctly regulated supply. Use a protected cell, a charger designed for that cell, and a power path matched to the exact development board; verify the board and charger datasheets before connecting a battery. No battery-life estimate is claimed.
 
 ---
 
@@ -224,16 +208,17 @@ To run without USB:
 
 ## 📁 Project Structure
 
-```
-emo-clock/
-├── arduino/
-│   └── emo_clock/
-│       └── emo_clock.ino     ← Upload this to ESP8266
-├── python/
-│   ├── notifier.py           ← Run on Android (Termux)
-│   └── notifier_pc.py        ← Run on Windows PC
-├── images/
-│   └── preview.png
+```text
+.
+├── emo_clock.ino         # Primary feature-rich ESP8266 sketch
+├── esp8266watch.ino      # Minimal Wi-Fi/NTP clock sketch
+├── oled_watch.ino        # Alternate watch face; step count is a placeholder
+├── watchfuneddition.ino  # Watch/animated-eyes sketch
+├── notifier.py           # Android notification bridge (Termux)
+├── notifier_pc.py        # Windows WhatsApp window-title bridge
+├── QUICKSTART.md         # Short setup checklist
+├── timezone_values.md    # UTC offset reference
+├── index.svg             # SVG asset
 └── README.md
 ```
 
@@ -252,7 +237,7 @@ emo-clock/
 
 ## 📜 License
 
-MIT License — free to use, modify, and share!
+No license file is present in the repository. Reuse and redistribution terms are therefore not explicitly specified; add a license file if you intend to publish the project for reuse.
 
 
 ---
@@ -262,26 +247,23 @@ MIT License — free to use, modify, and share!
 [![C++](https://img.shields.io/badge/C%2B%2B-cpp?logo=C%2B%2B&logoColor=white)](https://github.com/NirmalyaLenka/esp8266-watch) · [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://github.com/NirmalyaLenka/esp8266-watch)
 
 
-## Repository structure
+## Sketch variants
 
-Key files and folders (not an exhaustive listing):
+- **`emo_clock.ino`** — primary sketch for the clock/date, Wi-Fi, NTP, weather, and HTTP notification display.
+- **`esp8266watch.ino`** — minimal clock that connects to Wi-Fi and uses NTP.
+- **`oled_watch.ino`** — alternate watch face; its step counter is a fixed placeholder, not a real pedometer.
+- **`watchfuneddition.ino`** — animated watch/eyes experiment.
 
-- `QUICKSTART.md`
-- `README.md`
-- `emo_clock.ino`
-- `esp8266watch.ino`
-- `index.svg`
-- `notifier.py`
-- `notifier_pc.py`
-- `oled_watch.ino`
-- `timezone_values.md`
-- `watchfuneddition.ino`
+Open and upload only one sketch at a time. The primary wiring documented above applies to the SSD1306 I²C display; confirm each sketch's settings before flashing it.
 
+## Security, privacy, and limitations
 
-## How it works
-
-The firmware entry point is `emo_clock.ino`. Open the sketch in Arduino IDE, select the matching board and serial port, verify the pin mapping and required libraries, then compile and upload. Hardware behaviour must be validated on the actual board; a README alone does not prove the circuit is safe or working.
-
+- The Android notifier reads notification metadata/content via Termux:API and sends selected fields to the ESP8266 over plain HTTP on the local network. Run it only on a network you trust and stop it with `Ctrl+C` when not needed.
+- The Windows notifier polls visible window titles and sends a count summary rather than full WhatsApp message content.
+- The ESP8266 HTTP endpoints are not authenticated or encrypted in the inspected sketch. Do not expose the device or port 80 directly to the public internet.
+- Weather needs a valid OpenWeatherMap API key and working internet access. Time depends on NTP synchronization; verify the UTC offset for your location.
+- The notification scripts require the ESP8266 IP address to be configured manually and the host and board to be able to reach each other on the same network.
+- The sketches and wiring were inspected for this documentation pass, but they were not compiled or tested on hardware here.
 
 ## Maintenance & Audit
 
